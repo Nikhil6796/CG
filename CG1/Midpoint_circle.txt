@@ -1,0 +1,47 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+int xc, yc;
+
+void plot(int x, int y)
+{
+    putpixel(xc + x, yc + y, WHITE);
+    putpixel(xc - x, yc + y, WHITE);
+    putpixel(xc + x, yc - y, WHITE);
+    putpixel(xc - x, yc - y, WHITE);
+    putpixel(xc + y, yc + x, WHITE);
+    putpixel(xc - y, yc + x, WHITE);
+    putpixel(xc + y, yc - x, WHITE);
+    putpixel(xc - y, yc - x, WHITE);
+}
+
+void main()
+{
+    int gd = DETECT, gm, x, y, r, p;
+
+    printf("Enter xc yc r: ");
+    scanf("%d %d %d", &xc, &yc, &r);
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    x = 0;
+    y = r;
+    p = 1 - r;
+
+    while (x <= y)
+    {
+        plot(x, y);
+        if (p < 0)
+            p = p + 2 * x + 3;
+        else
+        {
+            p = p + 2 * (x - y) + 5;   /* use old y, then decrement */
+            y--;
+        }
+        x++;
+    }
+
+    getch();
+    closegraph();
+}

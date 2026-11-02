@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <conio.h>
+#include <graphics.h>
+#define MAX 50
+int xmin = 100, ymin = 100, xmax = 300, ymax = 250;
+int x[MAX], y[MAX], nx[MAX], ny[MAX];
+int n;
+int inside(int px, int py, int edge)
+{
+ if(edge == 0) return px >= xmin; /* Left */
+ if(edge == 1) return px <= xmax; /* Right */
+ if(edge == 2) return py >= ymin; /* Top */
+ return py <= ymax; /* Bottom */
+}
+void intersect(int x1, int y1, int x2, int y2,
+ int edge, int *ix, int *iy)
+{
+ float m;
+ if(x2 != x1)
+ m = (float)(y2 - y1) / (x2 - x1);
+ else
+ m = 0;
+ if(edge == 0) /* Left */
+ {
+ *ix = xmin;
+ *iy = y1 + (int)(m * (xmin - x1));
+ }
+ else if(edge == 1) /* Right */
+ {
+ *ix = xmax;
+ *iy = y1 + (int)(m * (xmax - x1));
+ }
+ else if(edge == 2) /* Top */
+ {
+ *iy = ymin;
+ if(x2 != x1)
+ *ix = x1 + (int)((ymin - y1) / m);
+ else
+ *ix = x1;
+ }
+ else /* Bottom */
+ {
+ *iy = ymax;
+ if(x2 != x1)
+ *ix = x1 + (int)((ymax - y1) / m);
+ else
+ *ix = x1;
+ }
+}
+void clipPolygon(int edge)
+{
+ int i, j, count = 0;
+ int x1, y1, x2, y2, ix, iy;
+ int in1, in2;
+ for(i = 0; i < n; i++)
+ {
+ j = (i + 1) % n;
+ x1 = x[i];
+ y1 = y[i];
+ x2 = x[j];
+ y2 = y[j];
+ in1 = inside(x1, y1, edge);
+ in2 = inside(x2, y2, edge);
+ if(in1 && in2)
+ {
+ nx[count] = x2;
+ ny[count++] = y2;
+ }
+ else if(in1 && !in2)
+ {
+ intersect(x1, y1, x2, y2, edge, &ix, &iy);
+ nx[count] = ix;
+ ny[count++] = iy;
+ }
+     else if(!in1 && in2)
+ {
+ intersect(x1, y1, x2, y2, edge, &ix, &iy);
+ nx[count] = ix;
+ ny[count++] = iy;
+ nx[count] = x2;
+ ny[count++] = y2;
+ }
+ /* If both are outside, add nothing. */
+ }
+ n = count;
+ for(i = 0; i < n; i++)
+ {
+ x[i] = nx[i];
+ y[i] = ny[i];
+ }
+}
+int main()
+{
+ int gd = DETECT, gm;
+ int i;
+ printf("Enter number of polygon vertices (3 to 20): ");
+ scanf("%d", &n);
+ if(n < 3 || n > 20)
+ {
+ printf("Invalid number of vertices");
+ getch();
+ return 0;
+ }
+ printf("Enter vertices (x y):\n");
+ for(i = 0; i < n; i++)
+ scanf("%d%d", &x[i], &y[i]);
+ initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+ setcolor(WHITE);
+ rectangle(xmin, ymin, xmax, ymax);
+ setcolor(YELLOW);
+ for(i = 0; i < n; i++)
+ line(x[i], y[i], x[(i + 1) % n], y[(i + 1) % n]);
+ clipPolygon(0); /* Left */
+ clipPolygon(1); /* Right */
+ clipPolygon(2); /* Top */
+ clipPolygon(3); /* Bottom */
+ if(n >= 3)
+ {
+ setcolor(RED);
+ for(i = 0; i < n; i++)
+ line(x[i], y[i], x[(i + 1) % n], y[(i + 1) % n]);
+ }
+ getch();
+ closegraph();
+ return 0;
+}

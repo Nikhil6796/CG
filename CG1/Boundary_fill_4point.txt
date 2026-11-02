@@ -1,0 +1,28 @@
+#include <graphics.h>
+#include <conio.h>
+
+void bfill(int x, int y, int fc, int bc)
+{
+    int c = getpixel(x, y);
+    if (c != bc && c != fc)
+    {
+        putpixel(x, y, fc);
+        bfill(x + 1, y, fc, bc);
+        bfill(x - 1, y, fc, bc);
+        bfill(x, y + 1, fc, bc);
+        bfill(x, y - 1, fc, bc);
+    }
+}
+
+void main()
+{
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    setcolor(WHITE);
+    rectangle(200, 150, 240, 190);
+    bfill(220, 170, GREEN, WHITE);
+
+    getch();
+    closegraph();
+}

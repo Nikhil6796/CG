@@ -1,0 +1,57 @@
+
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void main()
+{
+    int gd = DETECT, gm, i, t, steep = 0;
+    int x1, y1, x2, y2, dx, dy, sx, sy, p;
+
+    printf("Enter x1 y1 x2 y2: ");
+    scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    dx = abs(x2 - x1);
+    dy = abs(y2 - y1);
+
+    sx = (x2 >= x1) ? 1 : -1;
+    sy = (y2 >= y1) ? 1 : -1;
+
+    if (dy > dx)
+    {
+        t = dx;
+        dx = dy;
+        dy = t;
+        steep = 1;
+    }
+
+    p = 2 * dy - dx;
+
+    for (i = 0; i <= dx; i++)
+    {
+        putpixel(x1, y1, WHITE);
+
+        if (p >= 0)
+        {
+            if (steep)
+                x1 = x1 + sx;
+            else
+                y1 = y1 + sy;
+
+            p = p - 2 * dx;
+        }
+
+        if (steep)
+            y1 = y1 + sy;
+        else
+            x1 = x1 + sx;
+
+        p = p + 2 * dy;
+    }
+
+    getch();
+    closegraph();
+}

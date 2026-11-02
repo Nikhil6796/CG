@@ -1,0 +1,32 @@
+#include <graphics.h>
+#include <conio.h>
+
+void ffill(int x, int y, int oc, int nc)
+{
+    int c = getpixel(x, y);
+    if (c == oc && c != nc)
+    {
+        putpixel(x, y, nc);
+        ffill(x + 1, y, oc, nc);
+        ffill(x - 1, y, oc, nc);
+        ffill(x, y + 1, oc, nc);
+        ffill(x, y - 1, oc, nc);
+        ffill(x + 1, y + 1, oc, nc);
+        ffill(x - 1, y - 1, oc, nc);
+        ffill(x + 1, y - 1, oc, nc);
+        ffill(x - 1, y + 1, oc, nc);
+    }
+}
+
+void main()
+{
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    setcolor(WHITE);
+    rectangle(200, 150, 240, 190);
+    ffill(220, 170, BLACK, YELLOW);
+
+    getch();
+    closegraph();
+}

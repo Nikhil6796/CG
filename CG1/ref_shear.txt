@@ -1,0 +1,53 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+void draw(int a[], int b[], int mx, int my, int col)
+{
+    int i;
+    setcolor(col);
+    for (i = 0; i < 3; i++)
+        line(mx + a[i], my - b[i], mx + a[(i + 1) % 3], my - b[(i + 1) % 3]);
+}
+
+void main()
+{
+    int gd = DETECT, gm, i, ch, mx, my;
+    int x[3] = {40, 120, 80};
+    int y[3] = {40, 40, 100};
+    int nx[3], ny[3];
+    float shx, shy;
+
+    printf("Enter shx shy: ");
+    scanf("%f %f", &shx, &shy);
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    mx = getmaxx() / 2;
+    my = getmaxy() / 2;
+
+    line(0, my, getmaxx(), my);        /* X axis */
+    line(mx, 0, mx, getmaxy());        /* Y axis */
+    draw(x, y, mx, my, WHITE);
+
+    outtextxy(5, 5, "1 X-axis  2 Y-axis  3 Origin");
+    outtextxy(5, 20, "4 Line y=x  5 X-shear  6 Y-shear");
+    ch = getch();
+
+    for (i = 0; i < 3; i++)
+    {
+        nx[i] = x[i];
+        ny[i] = y[i];
+        if (ch == '1') ny[i] = -y[i];
+        if (ch == '2') nx[i] = -x[i];
+        if (ch == '3') { nx[i] = -x[i]; ny[i] = -y[i]; }
+        if (ch == '4') { nx[i] = y[i]; ny[i] = x[i]; }
+        if (ch == '5') nx[i] = x[i] + (int)(shx * y[i]);
+        if (ch == '6') ny[i] = y[i] + (int)(shy * x[i]);
+    }
+
+    draw(nx, ny, mx, my, YELLOW);
+
+    getch();
+    closegraph();
+}

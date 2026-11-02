@@ -1,0 +1,67 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+long ncr(int m, int j)
+{
+    long c = 1;
+    int i;
+    for (i = 1; i <= j; i++)
+        c = c * (m - i + 1) / i;
+    return c;
+}
+
+float power(float a, int k)
+{
+    float r = 1;
+    while (k > 0)
+    {
+        r = r * a;
+        k--;
+    }
+    return r;
+}
+
+void main()
+{
+    int gd = DETECT, gm, n, i, j, k;
+    int x[10], y[10];
+    float t, b, xt, yt;
+
+    do
+    {
+        printf("Enter number of control points (2-10): ");
+        scanf("%d", &n);
+    } while (n < 2 || n > 10);
+
+    for (i = 0; i < n; i++)
+    {
+        printf("Point %d (x y): ", i + 1);
+        scanf("%d %d", &x[i], &y[i]);
+    }
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    setcolor(WHITE);
+    for (i = 0; i < n - 1; i++)
+        line(x[i], y[i], x[i + 1], y[i + 1]);
+    for (i = 0; i < n; i++)
+        circle(x[i], y[i], 4);
+
+    for (k = 0; k <= 1000; k++)
+    {
+        t = k / 1000.0;
+        xt = 0;
+        yt = 0;
+        for (j = 0; j < n; j++)
+        {
+            b = ncr(n - 1, j) * power(t, j) * power(1 - t, n - 1 - j);
+            xt = xt + b * x[j];
+            yt = yt + b * y[j];
+        }
+        putpixel((int)(xt + 0.5), (int)(yt + 0.5), RED);
+    }
+
+    getch();
+    closegraph();
+}

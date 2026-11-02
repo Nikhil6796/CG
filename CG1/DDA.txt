@@ -1,0 +1,39 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+#include <math.h>
+
+void main()
+{
+    int gd = DETECT, gm, i;
+    float x1, y1, x2, y2, dx, dy, steps, xinc, yinc, x, y;
+
+    printf("Enter x1 y1 x2 y2: ");
+    scanf("%f %f %f %f", &x1, &y1, &x2, &y2);
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    dx = x2 - x1;
+    dy = y2 - y1;
+    if (fabs(dx) > fabs(dy))
+        steps = fabs(dx);
+    else
+        steps = fabs(dy);
+    if (steps == 0)
+        steps = 1;
+
+    xinc = dx / steps;
+    yinc = dy / steps;
+    x = x1;
+    y = y1;
+
+    for (i = 0; i <= steps; i++)
+    {
+        putpixel((int)(x + 0.5), (int)(y + 0.5), WHITE);
+        x = x + xinc;
+        y = y + yinc;
+    }
+
+    getch();
+    closegraph();
+}

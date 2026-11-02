@@ -1,0 +1,83 @@
+#include <graphics.h>
+#include <conio.h>
+#include <stdio.h>
+
+int xmin = 100, ymin = 100, xmax = 500, ymax = 350;
+
+/* bits: 1=Left  2=Right  4=Bottom  8=Top  (screen: top = small y) */
+int code(int x, int y)
+{
+    int c = 0;
+    if (x < xmin) c = c | 1;
+    if (x > xmax) c = c | 2;
+    if (y > ymax) c = c | 4;
+    if (y < ymin) c = c | 8;
+    return c;
+}
+
+void main()
+{
+    int gd = DETECT, gm, x1, y1, x2, y2, c1, c2, c, x, y, accept = 0;
+
+    printf("Window: 100 100 500 350\n");
+    printf("Enter x1 y1 x2 y2: ");
+    scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    rectangle(xmin, ymin, xmax, ymax);
+    setcolor(RED);
+    line(x1, y1, x2, y2);
+    outtextxy(10, 10, "Original line (red). Press any key");
+    getch();
+
+    c1 = code(x1, y1);
+    c2 = code(x2, y2);
+
+    while (1)
+    {
+        if ((c1 | c2) == 0) { accept = 1; break; }   /* fully inside */
+        if (c1 & c2) break;                           /* fully outside */
+
+        c = c1 ? c1 : c2;                             /* pick outside point */
+
+        if (c & 8)
+        {
+            x = x1 + (long)(x2 - x1) * (ymin - y1) / (y2 - y1);
+            y = ymin;
+        }
+        else if (c & 4)
+        {
+            x = x1 + (long)(x2 - x1) * (ymax - y1) / (y2 - y1);
+            y = ymax;
+        }
+        else if (c & 2)
+        {
+            y = y1 + (long)(y2 - y1) * (xmax - x1) / (x2 - x1);
+            x = xmax;
+        }
+        else
+        {
+            y = y1 + (long)(y2 - y1) * (xmin - x1) / (x2 - x1);
+            x = xmin;
+        }
+
+        if (c == c1) { x1 = x; y1 = y; c1 = code(x, y); }
+        else         { x2 = x; y2 = y; c2 = code(x, y); }
+    }
+
+    cleardevice();
+    setcolor(WHITE);
+    rectangle(xmin, ymin, xmax, ymax);
+    if (accept)
+    {
+        setcolor(GREEN);
+        line(x1, y1, x2, y2);
+        outtextxy(10, 10, "Clipped line (green)");
+    }
+    else
+        outtextxy(10, 10, "Line rejected");
+
+    getch();
+    closegraph();
+}
