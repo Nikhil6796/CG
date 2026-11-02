@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <conio.h>
+#include <graphics.h>
+#include <math.h>
+
+int main()
+{
+    int gd = DETECT, gm;
+    int i, choice;
+
+    float x[4] = {-50, 50, 50, -50};
+    float y[4] = {-50, -50, 50, 50};
+
+    float tx, ty, sx, sy, angle, rad, X, Y;
+
+    printf("1. Translation\n");
+    printf("2. Scaling\n");
+    printf("3. Rotation\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+
+    if(choice == 1)
+    {
+        printf("Enter tx and ty: ");
+        scanf("%f%f", &tx, &ty);
+    }
+    else if(choice == 2)
+    {
+        printf("Enter sx and sy: ");
+        scanf("%f%f", &sx, &sy);
+    }
+    else if(choice == 3)
+    {
+        printf("Enter angle in degrees: ");
+        scanf("%f", &angle);
+
+        rad = angle * 3.14159 / 180.0;
+    }
+    else
+    {
+        printf("Invalid choice");
+        getch();
+        return 0;
+    }
+
+    initgraph(&gd, &gm, "C:\\TURBOC3\\BGI");
+
+    /* Draw original square in WHITE */
+    setcolor(WHITE);
+
+    for(i = 0; i < 4; i++)
+    {
+        line(320 + x[i], 240 - y[i],
+             320 + x[(i + 1) % 4], 240 - y[(i + 1) % 4]);
+    }
+
+    /* Apply selected transformation */
+    for(i = 0; i < 4; i++)
+    {
+        if(choice == 1)
+        {
+            x[i] = x[i] + tx;
+            y[i] = y[i] + ty;
+        }
+        else if(choice == 2)
+        {
+            x[i] = x[i] * sx;
+            y[i] = y[i] * sy;
+        }
+        else if(choice == 3)
+        {
+            X = x[i] * cos(rad) - y[i] * sin(rad);
+            Y = x[i] * sin(rad) + y[i] * cos(rad);
+
+            x[i] = X;
+            y[i] = Y;
+        }
+    }
+
+    /* Draw transformed square in RED */
+    setcolor(RED);
+
+    for(i = 0; i < 4; i++)
+    {
+        line(320 + x[i], 240 - y[i],
+             320 + x[(i + 1) % 4], 240 - y[(i + 1) % 4]);
+    }
+
+    getch();
+    closegraph();
+
+    return 0;
+}
